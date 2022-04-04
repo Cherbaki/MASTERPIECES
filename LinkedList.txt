@@ -1,0 +1,180 @@
+#include <iostream>
+#include <initializer_list>
+
+typedef int NodeType;
+class Node {
+public:
+	NodeType Data;
+	Node* Next = NULL, * Previous = NULL;
+
+
+	Node() = default;
+	Node(NodeType Data,Node* Next = NULL, Node* Previouse = NULL) {
+		this->Data = Data;
+		this->Next = Next;
+		this->Previous = Previous;
+	}
+	NodeType GetData() {
+		return Data;
+	}
+};
+
+class LinkedList {
+
+	int size = 0;
+public:
+	Node* Head = NULL;
+
+	LinkedList() = default;
+
+	//List initializer constructor
+	LinkedList(std::initializer_list<NodeType> list){
+		for (auto item : list)
+			AddAtEnd(item);
+	}
+
+	//Inserting Node at the from of the list 
+	void AddAtFront(NodeType Data) {
+		Node* newNode = new Node(Data,Head);
+		if(Head!=NULL)Head->Previous = newNode;
+		Head = newNode;
+		size++;
+	}
+	//Insert Node at the end of the 
+	void AddAtEnd(NodeType Data) {
+		
+		Node* Last = Head;
+		for (int i = 0; i < size - 1; i++) {
+			Last = Last->Next;
+		}
+		Node* newNode = new Node(Data, NULL, Last);
+		if (Last != NULL) {
+			Last->Next = newNode;
+			size++;
+		}
+		else {
+			Head = newNode;
+			size++;
+		}
+	}
+
+	//Insert Node based on index
+	void AddAt(int index,NodeType Data) {
+		//Validating the index
+		if (index > size || index < 0) {
+			std::cout << "Index is out of range" << std::endl;
+			return;
+		}
+
+		if (index == 0) {
+			Node* newNode = new Node(Data, Head);
+			if (Head != NULL)Head->Previous = newNode;
+			Head = newNode;
+			size++;
+			return;
+		}
+
+		Node* Befor = Head;
+		for (int i = 0; i < index - 1; i++) {
+			Befor = Befor->Next;
+		}
+
+		Node* newNode = new Node(Data, Befor->Next, Befor);
+		Befor->Next = newNode;
+		size++;
+	
+	}
+
+	//Delete Node at front
+	void DeleteAtFront() {
+		if (size != 0) {
+			Head = Head->Next;
+			delete Head->Previous;
+			Head->Previous = NULL;
+			size--;
+		}
+		else {
+			std::cout << "List is empty nothing to delete" << std::endl;
+		}
+	}
+
+	//Delete At the end
+	void DeleteAtEnd() {
+		if(size != 0){
+			Node* BeforeLast = Head;
+			
+			if (size == 1) {
+				delete Head;
+				Head = NULL;
+				size--;
+				return;
+			}
+		
+			for (int i = 0; i < size - 2; i++) {
+				BeforeLast = BeforeLast->Next;
+			}
+			delete BeforeLast->Next;
+			BeforeLast->Next = NULL;
+			size--;
+		}
+		else {
+			std::cout << "List is empty nothing to delete" << std::endl;
+		}
+
+	}
+
+	//Delete at the index
+	void DeleteAt(int index) {
+
+		//Validating the index
+		if (index >= size || index < 0) {
+			std::cout << "Index is out of range" << std::endl;
+			return;
+		}
+
+		if (index == 0){
+			Head = Head->Next;
+			delete Head->Previous;
+			Head->Previous = NULL;
+			size--;
+			return;
+		}
+
+		Node* Befor = Head;
+		for (int i = 0; i < index - 1; i++) {
+			Befor = Befor->Next;
+		}
+		//Checking if we are deleting last Node
+		if (index == size - 1) {
+			delete Befor->Next;
+			Befor->Next = NULL;
+			return;
+		}
+		//Neither first nor last
+		Befor->Next = Befor->Next->Next;
+		delete Befor->Next->Previous;
+		Befor->Next->Previous = Befor;
+
+	}
+
+	//Outputing the components of list
+	void Dispaly() {
+		if(size > 0){
+			Node* Temp = Head;
+			while (Temp != NULL) {
+				std::cout << Temp->Data << std::endl;
+				Temp = Temp->Next;
+			}
+			delete Temp;
+		}
+		else {
+			std::cout << "List is empty" << std::endl;
+		}
+	}
+
+
+	//Getter for the size field
+	int GetSize() {
+		return size;
+	}
+};
