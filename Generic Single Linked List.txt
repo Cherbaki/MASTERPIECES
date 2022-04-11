@@ -1,0 +1,202 @@
+//Singly linked list
+	template<class NodeType>
+	class LinkedList {
+
+		class Node {
+		public:
+			NodeType Data;
+			Node* Next = NULL;
+
+			Node() = default;
+			Node(NodeType Data, Node* Next = NULL) {
+				this->Data = Data;
+				this->Next = Next;
+			}
+			NodeType GetData() {
+				return Data;
+			}
+		};
+
+		int size = 0;
+		Node* Head = NULL;
+	public:
+
+		//Creating default constructor for list
+		LinkedList() = default;
+
+		//Copy constructor
+		LinkedList(const LinkedList& L2) {
+
+			Node* Temp = L2.Head;
+			for (int i = 0; i < L2.size; i++) {
+				AddAtEnd(Temp->Data);
+				Temp = Temp->Next;
+			}
+
+		}
+
+		//List initializer constructor
+		LinkedList(std::initializer_list<NodeType> list) {
+			for (auto item : list)
+				AddAtEnd(item);
+		}
+
+		//Inserting Node at the from of the list 
+		void AddAtFront(NodeType Data) {
+			Head = new Node(Data, Head);
+			size++;
+		}
+		//Insert Node at the end of the 
+		void AddAtEnd(NodeType Data) {
+
+			Node* Last = Head;
+			for (int i = 0; i < size - 1; i++) {
+				Last = Last->Next;
+			}
+			Node* newNode = new Node(Data, NULL);
+			if (Last != NULL) {
+				Last->Next = newNode;
+				size++;
+			}
+			else {
+				AddAtFront(Data);
+			}
+		}
+
+		//Insert Node based on index
+		void AddAt(int index, NodeType Data) {
+			//Validating the index
+			if (index > size || index < 0) {
+				std::cout << "Index is out of range" << std::endl;
+				return;
+			}
+
+			if (index == 0) {
+				AddAtFront(Data);
+				return;
+			}
+
+			Node* Befor = Head;
+			for (int i = 0; i < index - 1; i++) {
+				Befor = Befor->Next;
+			}
+
+			Node* newNode = new Node(Data, Befor->Next);
+			Befor->Next = newNode;
+			size++;
+
+		}
+
+		//Delete Node at front
+		void DeleteAtFront() {
+			if (size != 0) {
+				Node* temp = Head->Next;
+				delete Head;
+				Head = temp;
+				size--;
+			}
+			else {
+				std::cout << "List is empty nothing to delete" << std::endl;
+			}
+		}
+
+		//Delete At the end
+		void DeleteAtEnd() {
+			if (size != 0) {
+				if (size == 1) {
+					DeleteAtFront();
+					return;
+				}
+
+				Node* BeforeLast = Head;
+
+				for (int i = 0; i < size - 2; i++) {
+					BeforeLast = BeforeLast->Next;
+				}
+				delete BeforeLast->Next;
+				BeforeLast->Next = NULL;
+				size--;
+			}
+			else {
+				std::cout << "List is empty nothing to delete" << std::endl;
+			}
+
+		}
+
+		//Delete at the index
+		void DeleteAt(int index) {
+
+			//Validating the index
+			if (index >= size || index < 0) {
+				std::cout << "Index is out of range" << std::endl;
+				return;
+			}
+
+			if (index == 0) {
+				DeleteAtFront();
+				return;
+			}
+			else if (index == size - 1) {
+				DeleteAtEnd();
+			}
+
+			//If we are deleteing neither at start nor at end
+			Node* Befor = Head;
+			for (int i = 0; i < index - 1; i++) {
+				Befor = Befor->Next;
+			}
+			Node* temp = Befor->Next->Next;
+			delete Befor->Next;
+			Befor->Next = temp;
+
+		}
+
+		//Outputing the components of list
+		void Dispaly() {
+			if (size > 0) {
+				Node* Temp = Head;
+				while (Temp != NULL) {
+					std::cout << Temp->Data << std::endl;
+					Temp = Temp->Next;
+				}
+				delete Temp;
+			}
+			else {
+				std::cout << "List is empty" << std::endl;
+			}
+		}
+
+		//Overloading assigment operator
+		LinkedList& operator =(const LinkedList& L2) {
+
+			//Deleting all the list items
+			int tempSize = size;
+			for (int i = 0; i < tempSize; i++) {
+				DeleteAtEnd();
+			}
+
+			//Populating this object
+			Node* Temp = L2.Head;
+			for (int i = 0; i < L2.size; i++) {
+				AddAtEnd(Temp->Data);
+				Temp = Temp->Next;
+			}
+
+			return *this;
+		}
+
+		//Overloading subscript operator
+		NodeType& operator [](int index) {
+			
+			Node* temp = Head;
+			for (int i = 0; i < index; i++){
+				temp = temp->Next;
+			}
+			return temp->Data;
+		}
+
+		//Getter for the size field
+		int GetSize() {
+			return size;
+		}
+	};
