@@ -1,0 +1,119 @@
+//Creating generic Queue based on Node
+template <typename MyType>
+class GQueue {
+
+	class Node {
+	public:
+		MyType Data;
+		Node* Next;
+		Node(MyType Data, Node* Next = NULL)
+			:Data(Data), Next(Next){}
+	};
+	
+	Node* top = NULL, *back = NULL;
+	int size = 0;
+public:
+	
+	//Default constructor
+	GQueue() = default;
+
+	//List initialize constructor
+	GQueue(const std::initializer_list<MyType> list) {
+		for (auto item : list)
+			Enqueue(item);
+	}
+
+	//Destructor which delets all the items
+	~GQueue() {
+		int InitialSize = size;
+		for (int i = 0; i < InitialSize;i++) {
+			Dequeue();
+		}
+	}
+
+	//Copy constructor
+	GQueue(const GQueue<MyType>& Q2) {
+		
+		Node* temp = Q2.top;
+		for (int i = 0; i < Q2.size; i++) {
+			Enqueue(temp->Data);
+			temp = temp->Next;
+		}
+			
+
+	}
+	
+	//Checkin if queue is empty
+	bool isEmpty() {
+		return size == 0;
+	}
+
+	//Adding item in queue from the end
+	void Enqueue(MyType Data) {
+		//Checking if queue is emty to assigne new node to both top and back pointers
+		if (isEmpty()) {
+			top = back = new Node(Data, back);
+			size++;
+			return;
+		}
+		
+		back = back->Next = new Node(Data);
+		size++;
+	}
+
+	//Deleteing items from the front of queue
+	void Dequeue() {
+		//When there is only one element
+		if (size == 1) {
+			delete top;
+			back = top = NULL;
+			this->size--;
+			return;
+		}
+
+		if (size > 0 && top != NULL) {
+			Node* temp = top;
+			top = top->Next;
+			delete temp;
+			size--;
+		}
+		else
+			std::cout << "Queue is empty already" << std::endl;
+	}
+
+	//Displaying elements of queue
+	void Display() {
+		if (size == 0) {
+			std::cout << "Queue is empty" << std::endl;
+			return;
+		}
+		Node* temp = top;
+		while (temp != NULL) {
+			std::cout << temp->Data << "\t";
+			temp = temp->Next;
+		}
+		std::cout << std::endl;
+	}
+
+	//Displaying elements of queue
+	void Display(std::ostream& out) {
+		if (size == 0) {
+			out << "Queue is empty" << std::endl;
+			return;
+		}
+		Node* temp = top;
+		while (temp != NULL) {
+			out << temp->Data << "\t";
+			temp = temp->Next;
+		}
+		std::cout << std::endl;
+	}
+
+};
+//Overloading output operator
+template <typename MyType>
+std::ostream& operator <<(std::ostream& out,GQueue<MyType> Q1 ){
+	Q1.Display(out);
+	return out;
+}
+
