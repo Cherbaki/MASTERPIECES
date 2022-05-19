@@ -1,0 +1,80 @@
+#include <iostream>
+#include <initializer_list>
+
+
+template <typename T>
+class BST {
+	class Node {
+	public:
+		T data;
+		Node* left = NULL, * right = NULL;
+		
+		//Explicite constructor
+		Node(T Data):data(Data){}
+
+	};
+	Node* root = NULL;
+public:
+	//Default constructor
+	BST() = default;
+	//List initializer constructo
+	BST(std::initializer_list<T> list) {
+		for (T item : list)
+			Add(item);
+	}
+	//Inserts data recursively
+	void Add(T data) {
+		add(data, root);
+	}
+	//Displays data recursively
+	void Display() {
+		inorder(root);
+	}
+	//Searchs data in BST
+	bool Search(T Target) {
+		return Search(root, Target);
+	}
+private:
+	//Add helper
+	void add(T data, Node* &root) {
+		
+		//Inserting condition
+		if (root == NULL) {
+			root = new Node(data);
+			return;
+		}
+		//Going right
+		if (root->data < data) {
+			add(data, root->right);
+			return;
+		}
+		//Going left
+		if (root->data > data) {
+			add(data, root->left);
+			return;
+		}
+		//Element is already there
+		std::cout << "Element is already in BST" << std::endl;
+		return;
+
+	}
+	//Display helper
+	void inorder(Node* Root) {
+		if (Root != NULL) {
+			inorder(Root->left);
+			std::cout << Root->data << std::endl;
+			inorder(Root->right);
+		}
+	}
+	//Search helper
+	bool Search(Node* Root,T target) {
+		if (Root == NULL)
+			return false;
+		if (Root->data == target)
+			return true;
+		else if (Root->data < target)
+			return Search(Root->right, target);
+		else if (Root->data > target)
+			return Search(Root->left, target);
+	}
+};
