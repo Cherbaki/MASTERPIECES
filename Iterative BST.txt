@@ -1,0 +1,98 @@
+#include <iostream>
+#include <initializer_list>
+#include <stack>
+
+//Iterative BST
+template <typename T>
+class BST {
+	class Node {
+	public:
+		T data;
+		Node* left = NULL, * right = NULL;
+		Node(T Data):data(Data){}
+	};
+	
+public:
+	Node* root = NULL;
+	//Default constructor
+	BST() = default;
+
+	//List initialiser constructor
+	BST(std::initializer_list<T> list) {
+		for (T item : list)
+			Add(item);
+	}
+
+
+	//Inserts element in the BST 
+	void Add(T data) {
+		
+		//If we are inserting first element
+		if (root == NULL){
+			root = new Node(data);
+			return;
+		}
+
+		Node* temp = root;
+		Node* beforTemp = NULL;
+		while (temp != NULL) {
+			beforTemp = temp;
+			//If element is already inserted
+			if (temp->data == data) {
+				std::cout << "Element is in BST already" << std::endl;
+				return;
+			}
+			else if (temp->data > data)
+				temp = temp->left;
+			else if (temp->data < data)
+				temp = temp->right;
+		}
+		//Assigning node to appropriate adress
+		if(beforTemp->data > data)
+			beforTemp->left = new Node(data);
+		else if(beforTemp->data < data)
+			beforTemp->right = new Node(data);
+	}
+
+	//Diplays elements of a list (Inorder)
+	void Display() {
+
+		Node* temp = root;
+		std::stack<Node*> s1;
+
+		for (;;) {
+			//Going left if there is any child
+			if (temp != NULL) {
+				s1.push(temp);
+				temp = temp->left;
+			}
+			else {
+				//Breakig loop if stack is empty
+				if (s1.empty())break;
+				temp = s1.top();
+				std::cout << s1.top()->data << std::endl;
+				temp = temp->right;
+				s1.pop();
+			}
+
+		}
+
+	}
+
+	//Seachs element in BST
+	bool Search(T data) {
+		Node* temp = root;
+
+		while (temp != NULL) {
+			if (temp->data == data)
+				return true;
+			if (temp->data < data)
+				temp = temp->right;
+			else if (temp->data > data)
+				temp = temp->left;
+		}
+		std::cout << "Out" << std::endl;
+		return false;
+	}
+
+};
