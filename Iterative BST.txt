@@ -103,7 +103,7 @@ public:
 		Node* Target = root;
 		//If BST is empty
 		if (Target == NULL) {
-			std::cout << "Such element does not exist in the BST" << std::endl;
+			std::cout << "BST is empty! nothing to delete" << std::endl;
 			return;
 		}
 		
