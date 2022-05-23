@@ -94,5 +94,111 @@ public:
 		std::cout << "Out" << std::endl;
 		return false;
 	}
+	
+	//Deletes given element from BST
+	void Delete(T data) {
+
+		//Searching for targer
+		Node* beforeTemp = NULL;
+		Node* Target = root;
+		//If BST is empty
+		if (Target == NULL) {
+			std::cout << "Such element does not exist in the BST" << std::endl;
+			return;
+		}
+		
+		while (Target->data != data) {
+			beforeTemp = Target;
+			if (Target->data < data)
+				Target = Target->right;
+			else
+				Target = Target->left;
+
+			if (Target == NULL)break;
+		}
+		
+		//If element did't found
+		if (Target == NULL) {
+			std::cout << "Such element does not exist in the BST" << std::endl;
+			return;
+		}
+		//If we are deleteing leaf node
+		if (Target->left == NULL && Target->right == NULL) {
+			Case1(beforeTemp, Target);
+			return;
+		}
+		
+
+
+		//If we are deleting node with one child
+		if ((Target->left == NULL && Target->right != NULL) || (Target->left != NULL && Target->right == NULL)) {
+			Case2(beforeTemp, Target);
+			return;
+		}
+		//If we are deleting node with two child
+		if (Target->left != NULL && Target->right != NULL) {
+			Case3(Target);
+		}
+	
+	}
+
+
+private:
+	void Case1(Node*& beforeLeaf,Node*& Target) {
+
+		if (beforeLeaf->left == Target){
+			delete beforeLeaf->left;
+			beforeLeaf->left = NULL;
+		}
+		else if (beforeLeaf->right == Target){
+			delete beforeLeaf->right;
+			beforeLeaf->right = NULL;
+		}
+
+	}
+
+	void Case2(Node*& beforeNode,Node*& Target) {
+
+		//Determining if deleted node has left or right child
+		Node* tempChild = Target->left;
+		if (Target->left == NULL)tempChild = Target->right;
+
+
+		//Determining weither the Temp node is right or left for the before node
+		if (beforeNode->left == Target) {
+			beforeNode->left = tempChild;
+			delete Target;
+		}
+		else if (beforeNode->right == Target) {
+			beforeNode->right = tempChild;
+			delete Target;
+		}
+
+
+	}
+
+	void Case3(Node*& Target) {
+		//Find rightmost element from left subtree
+		Node* RightMost = Target->left;
+		Node* BeforRightMost = Target;
+		while (RightMost->right != NULL) {
+			BeforRightMost = RightMost;
+			RightMost = RightMost->right;
+		}
+		//Assigne vlaue of righmost elemnet to target
+		Target->data = RightMost->data;
+
+		//If righmost element is Case1(Leaf)
+		if (RightMost->left == NULL && RightMost->right == NULL) {
+			Case1(BeforRightMost, RightMost);
+			return;
+		}
+		//If righmost node is Case2(Branch with one child)
+		if (!(RightMost->left == NULL && RightMost->right == NULL)) {
+			Case2(BeforRightMost, RightMost);
+			return;
+		}
+			
+	}
 
 };
