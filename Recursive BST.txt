@@ -8,9 +8,9 @@ class BST {
 	public:
 		T data;
 		Node* left = NULL, * right = NULL;
-		
+
 		//Explicite constructor
-		Node(T Data):data(Data){}
+		Node(T Data) :data(Data) {}
 
 	};
 	Node* root = NULL;
@@ -34,10 +34,14 @@ public:
 	bool Search(T Target) {
 		return Search(root, Target);
 	}
+	//Deletes given element from BST
+	void Delete(T data) {
+		Delete(root,data);
+	}
 private:
 	//Add helper
-	void add(T data, Node* &root) {
-		
+	void add(T data, Node*& root) {
+
 		//Inserting condition
 		if (root == NULL) {
 			root = new Node(data);
@@ -67,7 +71,7 @@ private:
 		}
 	}
 	//Search helper
-	bool Search(Node* Root,T target) {
+	bool Search(Node* Root, T target) {
 		if (Root == NULL)
 			return false;
 		if (Root->data == target)
@@ -77,4 +81,47 @@ private:
 		else if (Root->data > target)
 			return Search(Root->left, target);
 	}
+	//Delete helper
+	void Delete(Node*& Root, T data) {
+
+		if (Root == NULL)
+			return;
+		else if (data < Root->data)
+			Delete(Root->left, data);
+		else if (data > Root->data)
+			Delete(Root->right, data);
+		else //Here we arleady found target node
+		//Case 1
+			if (Root->left == NULL && Root->right == NULL) {
+				delete Root;
+				Root = NULL;
+			}
+		//Case 2
+			else if (Root->left == NULL) {
+				Node* temp = Root;
+				Root = Root->right;
+				delete temp;
+			}
+			else if (Root->right == NULL) {
+				Node* temp = Root;
+				Root = Root->left;
+				delete temp;
+			}
+		//Case 3
+			else {
+				Node* MaxInLeftSubtree = FindMin(Root->left);
+				Root->data = MaxInLeftSubtree->data;
+				Delete(Root->left, MaxInLeftSubtree->data);
+			}
+	}
+
+
+private:
+	//Finds maximume node in the left subtree
+	Node* FindMin(Node* rootsLeft) {
+		while (rootsLeft->right != NULL)
+			rootsLeft = rootsLeft->right;
+		return rootsLeft;
+	}
+
 };
