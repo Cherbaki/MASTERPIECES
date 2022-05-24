@@ -116,7 +116,6 @@ private:
 	}
 
 
-private:
 	//Finds maximume node in the left subtree
 	Node* FindMin(Node* rootsLeft) {
 		while (rootsLeft->right != NULL)
