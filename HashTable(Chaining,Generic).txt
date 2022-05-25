@@ -1,0 +1,91 @@
+#include <iostream>
+#include <initializer_list>
+#include <list>
+
+#define wait std::cin.get();
+
+
+template <typename Key, typename Value,int capacity = 5>
+class HashTable {
+	
+	std::list<std::pair<Key, Value>> container[capacity];
+public:
+	//Default construcot
+	HashTable() = default;
+	//Checks if HashTable is empty
+	bool IsEmpty() {
+		for (auto item : this->container)
+			if (!item.empty())return false;
+		return true;
+	}
+	//Inserts data in the HashTable
+	void Add(Key key, Value value) {
+
+		int index = HashFunction(key);
+		
+		//Checking if this key is already taken
+		std::list<std::pair<Key, Value>>::iterator iter = container[index].begin();
+		for (; iter != container[index].end();iter++) {
+			//If key is already taken
+			if (iter->first == key) {
+				iter->second = value;
+				return;
+			}
+		}
+		//Key is not taken so just insert
+		this->container[index].emplace_back(key, value);
+	}
+	//Removes item with given key from the hash table
+	void Remove(Key key) {
+		int index = HashFunction(key);
+		//Creating iterator and iterating through list to find given key
+		std::list<std::pair<Key, Value>>::iterator iter = container[index].begin();
+		for (; iter != container[index].end(); iter++) {
+			//Check if key of the list element equals to our target one
+			if (iter->first == key) {
+				container[index].erase(iter);
+				return;
+			}
+		}
+		//Such key does not exist in the HashTable
+		std::cout << "No value with given key exis !!!" << std::endl;
+
+	}
+	//Searching value using given key
+	std::pair<Key,Value>& Search(Key key) {
+		int index = HashFunction(key);
+		//Creating iterator and iterating through list to find given key
+		std::list<std::pair<Key, Value>>::iterator iter = container[index].begin();
+		for (; iter != container[index].end(); iter++) {
+			//Check if key of the list element equals to our target one
+			if (iter->first == key) {
+				return *iter;
+			}
+		}
+		//Such key does not exist in the HashTable
+		std::cout << "No value with given key exis !!!" << std::endl;
+	}
+	//Displays data of the HashTable
+	void Display() {
+
+		for (auto list : this->container) {
+			if (!list.empty()) {
+				for (auto item : list)
+					std::cout << item.second << "\t";
+			}
+		}
+		std::cout << std::endl;
+
+	}
+
+	//Overloading subscript operator
+	Value& operator [](int key) {
+		return Search(key).second;
+	}
+
+private:
+	//Generates index in the container for the pair
+	int HashFunction(Key key) {
+		return key % capacity;
+	}
+};
