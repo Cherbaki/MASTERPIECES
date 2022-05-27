@@ -1,0 +1,153 @@
+#include <iostream>
+#include <list>
+#include <string>
+
+
+
+template <typename Key,typename Value>
+class HashTable{
+
+	class Node {
+	public:
+		bool isDead = false;
+		Key key;
+		Value value;
+		//Default constructor
+		Node() = default;
+		//Converting number into value type
+		operator Value() {
+			return value;
+		}
+	};
+	int capacity = 10;
+	int size = 0;
+	Node** container = NULL;
+public:
+	//Default constructor
+	HashTable() {
+		container = new Node*[capacity];
+		std::fill(container, container + capacity, nullptr);
+	}
+
+	//Checks if the HashTable is empty or not
+	bool isEmpty() {
+		for (int i = 0; i < capacity; i++)
+			if (this->container[i] != NULL)
+				return false;
+		return true;
+	}
+
+	//Inserts item in the container
+	void Add(Key key, Value value) {
+		
+		int index = HashFunction(key);
+		
+		//Checking if key is already used and replacig value with new value
+		if(!isEmpty()){
+			
+			for (int i = index; i < capacity - index; i++) {
+				
+				if(container[i] != NULL){
+					if (!container[i]->isDead && container[i]->key == key) {
+						container[i]->value = value;
+						return;
+					}
+				}
+			}
+		}
+		//Checking if HashTable is full
+		if (isFull()) {
+			//Allocating new memory for the array
+			Node** temp = container;
+			capacity = 2 * capacity;
+			container = new Node*[capacity];
+
+			std::fill(container, container + capacity, nullptr);
+			
+			for (int i = 0; i < capacity/2; i++) {
+				container[i] = temp[i];
+			}
+			delete temp;
+		}
+		//It's neither full nor empty
+		for (;;) {
+
+			//If we have NULL just insert new pointer
+			if (container[index] == NULL) {
+				container[index] = new Node();
+				container[index]->key = key;
+				container[index]->value = value;
+				size++;
+				return;
+			}
+			//If we have dead Node just insert as well
+			if (container[index]->isDead) {
+				container[index]->key = key;
+				container[index]->value = value;
+				container[index]->isDead = false;
+				size++;
+				return;
+			}
+
+			index++;
+		}
+
+	}
+
+	//Deletes value from the HashTable
+	void Delete(Key key) {
+
+		int index = HashFunction(key);
+		while(index <= capacity - 1) {
+			if (container[index] != NULL && !container[index]->isDead && container[index]->key == key) {
+				container[index]->isDead = true;
+				size--;
+				return;
+			}
+			index++;
+		}
+		std::cout << "there is no such item to delete" << std::endl;
+	}
+
+	//Searchs item in the HashTable
+	bool Search(Key key) {
+		for (int i = 0; i < capacity; i++) 
+			if (container[i] != NULL && container[i]->key == key)return true;
+		return false;
+	}
+
+	//Checks if HashTable is full or not
+	bool isFull() {
+		return container[capacity - 1] != NULL;
+	}
+
+	//Displays items of HashTable
+	void Display() {
+		for (int i = 0; i < capacity; i++){
+			if (container[i] != NULL){
+				if (!container[i]->isDead)
+					std::cout << container[i]->value << "\t";
+				else std::cout << "Dead\t";
+			}
+			else std::cout << "NULL\t";
+		}
+		std::cout << std::endl;
+	}
+
+	//Overloading subscript operator for rvalue
+	Node& operator [](Key key) {
+		int index = HashFunction(key);
+		for (int i = index; i < capacity - index; i++) {
+			if (container[i] != NULL && container[i]->key == key)
+				return *container[i];
+		}
+		exit(1);
+	}
+private:
+
+	//Generates index for Node in the container
+	int HashFunction(Key key) {
+		return key % capacity;
+	}
+
+};
