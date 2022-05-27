@@ -114,14 +114,12 @@ public:
 			else
 				Target = Target->left;
 
-			if (Target == NULL)break;
+			if (Target == NULL){
+				std::cout << "Such element does not exist in the BST" << std::endl;
+				return;
+			}
 		}
 		
-		//If element did't found
-		if (Target == NULL) {
-			std::cout << "Such element does not exist in the BST" << std::endl;
-			return;
-		}
 		//If we are deleteing leaf node
 		if (Target->left == NULL && Target->right == NULL) {
 			Case1(beforeTemp, Target);
