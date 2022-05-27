@@ -1,13 +1,11 @@
 #include <iostream>
-#include <initializer_list>
 #include <list>
 
-#define wait std::cin.get();
-
-
-template <typename Key, typename Value,int capacity = 5>
+typedef int Key;
+typedef int Value;
+const int capacity = 5;
 class HashTable {
-	
+
 	std::list<std::pair<Key, Value>> container[capacity];
 public:
 	//Default construcot
@@ -22,10 +20,10 @@ public:
 	void Add(Key key, Value value) {
 
 		int index = HashFunction(key);
-		
+
 		//Checking if this key is already taken
 		std::list<std::pair<Key, Value>>::iterator iter = container[index].begin();
-		for (; iter != container[index].end();iter++) {
+		for (; iter != container[index].end(); iter++) {
 			//If key is already taken
 			if (iter->first == key) {
 				iter->second = value;
@@ -52,7 +50,7 @@ public:
 
 	}
 	//Searching value using given key
-	std::pair<Key,Value>& Search(Key key) {
+	std::pair<Key, Value>& Search(Key key) {
 		int index = HashFunction(key);
 		//Creating iterator and iterating through list to find given key
 		std::list<std::pair<Key, Value>>::iterator iter = container[index].begin();
