@@ -1,126 +1,189 @@
 #include <iostream>
 #include <initializer_list>
+#include <stack>
 
-
+//Iterative BST
 template <typename T>
 class BST {
 	class Node {
 	public:
 		T data;
 		Node* left = NULL, * right = NULL;
-
-		//Explicite constructor
-		Node(T Data) :data(Data) {}
-
+		Node(T Data):data(Data){}
 	};
-	Node* root = NULL;
+	
 public:
+	Node* root = NULL;
 	//Default constructor
 	BST() = default;
-	//List initializer constructo
+
+	//List initialiser constructor
 	BST(std::initializer_list<T> list) {
 		for (T item : list)
 			Add(item);
 	}
-	//Inserts data recursively
-	void Add(T data) {
-		add(data, root);
-	}
-	//Displays data recursively
-	void Display() {
-		inorder(root);
-	}
-	//Searchs data in BST
-	bool Search(T Target) {
-		return Search(root, Target);
-	}
-	//Deletes given element from BST
-	void Delete(T data) {
-		Delete(root,data);
-	}
-private:
-	//Add helper
-	void add(T data, Node*& root) {
 
-		//Inserting condition
-		if (root == NULL) {
+
+	//Inserts element in the BST 
+	void Add(T data) {
+		
+		//If we are inserting first element
+		if (root == NULL){
 			root = new Node(data);
 			return;
 		}
-		//Going right
-		if (root->data < data) {
-			add(data, root->right);
-			return;
-		}
-		//Going left
-		if (root->data > data) {
-			add(data, root->left);
-			return;
-		}
-		//Element is already there
-		std::cout << "Element is already in BST" << std::endl;
-		return;
 
-	}
-	//Display helper
-	void inorder(Node* Root) {
-		if (Root != NULL) {
-			inorder(Root->left);
-			std::cout << Root->data << std::endl;
-			inorder(Root->right);
+		Node* temp = root;
+		Node* beforTemp = NULL;
+		while (temp != NULL) {
+			beforTemp = temp;
+			//If element is already inserted
+			if (temp->data == data) {
+				std::cout << "Element is in BST already" << std::endl;
+				return;
+			}
+			else if (temp->data > data)
+				temp = temp->left;
+			else if (temp->data < data)
+				temp = temp->right;
 		}
+		
+		//Assigning node to appropriate adress
+		if(beforTemp->data > data)
+			beforTemp->left = new Node(data);
+		else if(beforTemp->data < data)
+			beforTemp->right = new Node(data);
 	}
-	//Search helper
-	bool Search(Node* Root, T target) {
-		if (Root == NULL)
-			return false;
-		if (Root->data == target)
-			return true;
-		else if (Root->data < target)
-			return Search(Root->right, target);
-		else if (Root->data > target)
-			return Search(Root->left, target);
-	}
-	//Delete helper
-	void Delete(Node*& Root, T data) {
 
-		if (Root == NULL)
-			return;
-		else if (data < Root->data)
-			Delete(Root->left, data);
-		else if (data > Root->data)
-			Delete(Root->right, data);
-		else //Here we arleady found target node
-		//Case 1
-			if (Root->left == NULL && Root->right == NULL) {
-				delete Root;
-				Root = NULL;
+	//Diplays elements of a list (Inorder)
+	void Display() {
+
+		Node* temp = root;
+		std::stack<Node*> s1;
+
+		for (;;) {
+			//Going left if there is any child
+			if (temp != NULL) {
+				s1.push(temp);
+				temp = temp->left;
 			}
-		//Case 2
-			else if (Root->left == NULL) {
-				Node* temp = Root;
-				Root = Root->right;
-				delete temp;
-			}
-			else if (Root->right == NULL) {
-				Node* temp = Root;
-				Root = Root->left;
-				delete temp;
-			}
-		//Case 3
 			else {
-				Node* MaxInLeftSubtree = FindMax(Root->left);
-				Root->data = MaxInLeftSubtree->data;
-				Delete(Root->left, MaxInLeftSubtree->data);
+				//Breakig loop if stack is empty
+				if (s1.empty())break;
+				temp = s1.top();
+				std::cout << s1.top()->data << std::endl;
+				temp = temp->right;
+				s1.pop();
 			}
+
+		}
+
+	}
+
+	//Seachs element in BST
+	bool Search(T data) {
+		Node* temp = root;
+
+		while (temp != NULL) {
+			if (temp->data == data)
+				return true;
+			if (temp->data < data)
+				temp = temp->right;
+			else if (temp->data > data)
+				temp = temp->left;
+		}
+		std::cout << "Out" << std::endl;
+		return false;
+	}
+	
+	//Deletes given element from BST
+	void Delete(T data) {
+
+		//Searching for targer
+		Node* beforeTemp = NULL;
+		Node* Target = root;
+		//If BST is empty
+		if (Target == NULL) {
+			std::cout << "BST is empty! nothing to delete" << std::endl;
+			return;
+		}
+		
+		while (Target->data != data) {
+			beforeTemp = Target;
+			if (Target->data < data)
+				Target = Target->right;
+			else
+				Target = Target->left;
+
+			if (Target == NULL){
+				std::cout << "Such element does not exist in the BST" << std::endl;
+				return;
+			}
+		}
+		
+		//If taget does not have pearent so it's root
+		if(beforeTemp == NULL){
+		    if(root->right != 0)
+		        root = root->right;
+		    else 
+		        root = root->left;
+		        
+		        return;
+		}
+		
+		//If we are deleteing leaf node or one child node
+		if (!(Target->left != NULL && Target->right != NULL)) {
+			Case2(beforeTemp, Target);
+			return;
+		}
+		
+		//If we are deleting node with two child
+		if (Target->left != NULL && Target->right != NULL) {
+			Case3(Target);
+		}
+	
 	}
 
 
-	//Finds maximume node in the left subtree
-	Node* FindMax(Node* rootsLeft) {
-		while (rootsLeft->right != NULL)
-			rootsLeft = rootsLeft->right;
-		return rootsLeft;
+private:
+
+	void Case2(Node*& beforeNode,Node*& Target) {
+
+		//Determining if deleted node has left or right child
+		Node* tempChild = Target->left;
+		if (Target->left == NULL)tempChild = Target->right;
+
+
+		//Determining weither the Temp node is right or left for the before node
+		if (beforeNode->left == Target) {
+			beforeNode->left = tempChild;
+			delete Target;
+		}
+		else if (beforeNode->right == Target) {
+			beforeNode->right = tempChild;
+			delete Target;
+		}
+
+
+	}
+
+	void Case3(Node*& Target) {
+		//Find rightmost element from left subtree
+		Node* RightMost = Target->left;
+		Node* BeforRightMost = Target;
+		while (RightMost->right != NULL) {
+			BeforRightMost = RightMost;
+			RightMost = RightMost->right;
+		}
+		//Assigne vlaue of righmost elemnet to target
+		Target->data = RightMost->data;
+
+		//If righmost node is Case2(Branch with one child)
+		if (!(RightMost->left == NULL && RightMost->right == NULL)) {
+			Case2(BeforRightMost, RightMost);
+			return;
+		}
+			
 	}
 
 };
