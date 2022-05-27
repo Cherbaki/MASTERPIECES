@@ -109,7 +109,7 @@ private:
 			}
 		//Case 3
 			else {
-				Node* MaxInLeftSubtree = FindMin(Root->left);
+				Node* MaxInLeftSubtree = FindMax(Root->left);
 				Root->data = MaxInLeftSubtree->data;
 				Delete(Root->left, MaxInLeftSubtree->data);
 			}
@@ -117,7 +117,7 @@ private:
 
 
 	//Finds maximume node in the left subtree
-	Node* FindMin(Node* rootsLeft) {
+	Node* FindMax(Node* rootsLeft) {
 		while (rootsLeft->right != NULL)
 			rootsLeft = rootsLeft->right;
 		return rootsLeft;
