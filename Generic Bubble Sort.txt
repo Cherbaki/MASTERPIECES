@@ -1,0 +1,16 @@
+template <typename T>
+void BubbleSort(T* Container,int Size) {
+
+	for (int i = 0; i < Size; i++) {
+		bool HasSwapped = false;
+		for (int k = 0; k < Size - 1; k++) {
+
+			if (Container[k] > Container[k + 1]) {
+				std::swap(Container[k], Container[k + 1]);
+				HasSwapped = true;
+			}
+		}
+		if (!HasSwapped)break;
+	}
+	
+}
