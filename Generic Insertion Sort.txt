@@ -1,5 +1,5 @@
 template <typename T>
-void InsertionSort(T* Container,int Size) {
+void SelectionSort(T* Container,int Size) {
 	for (int i = 0; i < Size; i++) {
 		int MinsIndex = i;
 		for (int k = MinsIndex + 1; k < Size; k++) {
