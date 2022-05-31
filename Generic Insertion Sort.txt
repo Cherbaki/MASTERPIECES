@@ -1,0 +1,15 @@
+template <typename T>
+void InsertionSort(T* Container,int Size) {
+	int counter = 0;
+	for (int i = 0; i < Size; i++) {
+		int MinsIndex = i;
+		for (int k = MinsIndex + 1; k < Size; k++) {
+			counter++;
+			if (Container[MinsIndex] > Container[k])
+				MinsIndex = k;
+		}
+		std::swap(Container[i], Container[MinsIndex]);
+	}
+	
+	std::cout << counter << std::endl;
+}
