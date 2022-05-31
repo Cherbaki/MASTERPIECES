@@ -1,0 +1,14 @@
+template <typename T>
+void InsertionSort(T* container,int Size) {
+
+	for (int i = 0; i < Size; i++) {
+		int val = container[i];
+		int j = i - 1;
+		while (j >= 0 && container[j] > val) {
+			container[j + 1] = container[j];
+			j--;
+		}
+		container[j + 1] = val;
+	}
+
+}
