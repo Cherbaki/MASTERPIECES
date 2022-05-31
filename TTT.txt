@@ -1,0 +1,188 @@
+#include <stdio.h>
+#include <time.h>
+
+//Creating 2 dimensional character array for 3X3 board
+char GameBoard[3][3];
+
+//Crating characters for player and NPC
+const char PLAYER = 'X';
+const char NPC = 'O';
+
+//Restarts board of the game which happens to be 2d Character array
+void RestartGameBoard(){
+    for(int r = 0; r < 3; r++){
+        for(int c = 0; c < 3; c++){
+            GameBoard[r][c] = ' ';
+        }
+    }
+}
+
+//Prints board in the console
+void PrintGameBoard(){
+    printf("\n");
+    printf(" %c | %c | %c ",GameBoard[0][0],GameBoard[0][1],GameBoard[0][2]);
+    printf("\n---|---|---\n");
+    printf(" %c | %c | %c ",GameBoard[1][0],GameBoard[1][1],GameBoard[1][2]);
+    printf("\n---|---|---\n");
+    printf(" %c | %c | %c \n",GameBoard[2][0],GameBoard[2][1],GameBoard[2][2]);
+
+}
+
+//Checks if there is any free space on the board and returns the amount
+int FreeSpaceChecker(){
+
+    int FreeSpaces = 0;
+
+    for(int r = 0; r < 3; r++){
+        for(int c = 0; c < 3; c++){
+            if(GameBoard[r][c] == ' ')
+                FreeSpaces++;
+        }
+    }
+    return FreeSpaces;
+}
+
+//This function will be executed when it'll be players turn to move
+void PlayersTurn(){
+
+    int r,c;
+    printf("Pass row number(From 1 to 3): ");
+    scanf("%d",&r);
+    //Decrementing given rows index to match it 0 based array
+    r--;
+    printf("Pass column number(Form 1 to 3): ");
+    scanf("%d",&c);
+    //Decrementing given columns index to math it 0 based array
+    c--;
+
+    //checking if given coordinates is already occupied
+    if(GameBoard[r][c] !=  ' '){
+        printf("Given place is already occupied, try another EMPTY one\n");
+        PlayersTurn();
+        return;
+    }
+
+    //If given coordinates aren't occupied
+    GameBoard[r][c] = PLAYER;
+
+}
+
+//This function will be executed when it'll be NPCs turn to move
+void NpcsTurn(){
+
+    //trying to generate NPCs move using random number
+    srand(time(NULL));
+    int r,c;
+
+    if(FreeSpaceChecker() < 9){
+        do{
+            r = rand() % 3;
+            c = rand() % 3;
+
+            //Looping until generating perfect coordinate
+        }while(GameBoard[r][c] != ' ');
+    }
+
+    GameBoard[r][c] = NPC;
+
+}
+
+//Checks who is the winner
+char CheckWinner(){
+    //Checking rows For winner
+    for(int i = 0; i < 3;i++){
+        if(GameBoard[i][0] == GameBoard[i][1] && GameBoard[i][0] == GameBoard[i][2])
+                return GameBoard[i][0];
+    }
+    //Checking columns
+    for(int i = 0; i < 3; i++){
+        if(GameBoard[0][i] == GameBoard[1][i] && GameBoard[0][i] == GameBoard[2][i])
+                return GameBoard[i][0];
+    }
+    //Checking Diagonals
+    if(GameBoard[0][0] == GameBoard[1][1] && GameBoard[0][0] == GameBoard[2][2])
+        return GameBoard[0][0];
+    if(GameBoard[0][2] == GameBoard[1][1] && GameBoard[0][2] == GameBoard[2][0])
+        return GameBoard[0][0];
+
+
+    return ' ';
+}
+
+//prints the winner
+void PrintWinner(char winner){
+
+    printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    if(winner == PLAYER)
+        printf("\nPlayer has won!!!\n");
+    else if(winner == NPC)
+        printf("\nNPC has won!!!\n");
+    else
+        printf("\nIt's a TIE!!!\n");
+
+    printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+}
+
+//Checks if player want to play again
+int PlayersResponse(){
+     char PlayersWhish;
+     printf("\n\nDo you want to player again(Pass 1 for yes and anything else for no): ");
+     //Cleaning buffer from possible end line
+     scanf(" %c");
+     scanf("%c",&PlayersWhish);
+    if(PlayersWhish == '1')
+        return 1;
+    return 0;
+}
+
+int main()
+{
+    int Response = -1;
+
+    do{
+
+        //Currently it'll be empty space, but then it will be replaced either with 'X' or 'Y'
+        char winner =  ' ';
+
+        //At first we'll restart the board
+        RestartGameBoard();
+
+
+        do{
+
+            //After reseting we can print game boards
+            PrintGameBoard();
+
+            //Asking player to make move
+            PlayersTurn();
+            //Now let's check if winner is already known
+            winner = CheckWinner();
+            if(winner != ' ' || FreeSpaceChecker() == 0)
+                break;
+
+            //Asking NPC to make move
+            NpcsTurn();
+            //Now let's check if winner is already known
+            winner = CheckWinner();
+            if(winner != ' ' || FreeSpaceChecker() == 0)
+                break;
+
+
+        }while(winner == ' ' && FreeSpaceChecker() != 9);
+
+        //Printing final game board to make winner visible graphically
+        PrintGameBoard();
+        //Printing the winner
+        PrintWinner(winner);
+
+        Response = PlayersResponse();
+        printf("Response: ",Response);
+
+    }while(Response == 1);
+
+    return 0;
+}
+
+
+
+
