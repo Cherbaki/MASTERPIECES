@@ -186,3 +186,48 @@ int main()
 
 
 
+____________________________________________________________________________________________________________
+					PseudoCode
+CREATE: 2 dimensional global character array for gameboard, name: GameBoard
+CREATE: 2 global character array for Players and Npcs characters(‘X’ or ‘0’)
+CREATE  Function: RestartGameBoard
+	Using nasted for loops set all entry of the GameBoard to space character	
+CREATE  Function: PeintGameBoard
+	Prints Game board in console with additional aspects .
+CREATE Function: FreeSpaceChecker, Return type integer
+	Using nasted for loops counts number of free spaces in the GameBoard and returns amount
+CREATE Function: PlayersTurn
+	Asks User to pass coordinates(row and column number)for move and then, if entry in the given coordinates is not taken puts players characte, else warns user about already taken entry and repets the process.
+CREATE Function: NpcsTurn 
+	IF: there is at least 1 free space
+GENERATE:  random number for 0 to 1 for row and column corrdnate until entry in the given coordinates is not empty space.
+	PRINT: Npcs character on the generated entry.
+CREATE Function:Check Winner
+FOR: Check if any row is already full with same Characters and if so return this character as winner.
+FOR: Check if any colomn is already full with same Characters and if so return this character as winner.
+IF: Check 2 diagonals for wining condition and return winner character.
+	IF: non of the above condition is satisfied, then just return empty space.
+CREATE Function: Print Winner takes one character parameter for winner
+	IF:winner is plater Print: “Player has won”
+	ELSE IF: Npc has won Print: “Npc has won”
+	ELSE if there is no winner Print: “It’s a TIE”
+
+CREATE FUNCTION: main
+CREATE Variable:”Response” latter will be used to determine if player want to continue playing after end of the game.
+	DO:
+		CALL:PrintGameBoard();
+		CALL: PlayersTurn();
+CHECK: If winner is already know using CheckWinner() function and if so break the    loop
+		CALL:Npcs turn();	
+CHECK: If winner is already know using CheckWinner()
+          WHILE: (winner == ‘ ‘ and Number of free spaces is more than 0)
+           PRINT: board for the final time to see winner visually
+           CALL: PrintWinner with argument winner
+
+			
+
+
+
+
+
+
