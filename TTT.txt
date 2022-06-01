@@ -12,8 +12,10 @@ const char NPC = 'O';
 void RestartGameBoard(){
     int r;
     int c;
-    for(r = 0; r < 3; r++){
-        for(c = 0; c < 3; c++){
+    for(r = 0; r < 3; r++)
+    {
+        for(c = 0; c < 3; c++)
+        {
             GameBoard[r][c] = ' ';
         }
     }
@@ -21,11 +23,17 @@ void RestartGameBoard(){
 
 //Prints board in the console
 void PrintGameBoard(){
+
     printf("\n");
+
     printf(" %c | %c | %c ",GameBoard[0][0],GameBoard[0][1],GameBoard[0][2]);
+
     printf("\n---|---|---\n");
+
     printf(" %c | %c | %c ",GameBoard[1][0],GameBoard[1][1],GameBoard[1][2]);
+
     printf("\n---|---|---\n");
+
     printf(" %c | %c | %c \n",GameBoard[2][0],GameBoard[2][1],GameBoard[2][2]);
 
 }
@@ -35,8 +43,10 @@ int FreeSpaceChecker(){
 
     int FreeSpaces = 0;
     int r,c;
-    for(r = 0; r < 3; r++){
-        for(c = 0; c < 3; c++){
+    for(r = 0; r < 3; r++)
+        {
+        for(c = 0; c < 3; c++)
+        {
             if(GameBoard[r][c] == ' ')
                 FreeSpaces++;
         }
@@ -52,6 +62,7 @@ void PlayersTurn(){
     scanf("%d",&r);
     //Decrementing given rows index to match it 0 based array
     r--;
+
     printf("Pass column number(Form 1 to 3): ");
     scanf("%d",&c);
     //Decrementing given columns index to math it 0 based array
@@ -73,7 +84,7 @@ void PlayersTurn(){
 void NpcsTurn(){
 
     //trying to generate NPCs move using random number
-    srand(time(NULL));
+    srand(time(0));
     int r,c;
 
     if(FreeSpaceChecker() < 9){
@@ -93,20 +104,31 @@ void NpcsTurn(){
 char CheckWinner(){
     int i;
     //Checking rows For winner
-    for(i = 0; i < 3;i++){
+    for(i = 0; i < 3;i++)
+        {
         if(GameBoard[i][0] == GameBoard[i][1] && GameBoard[i][0] == GameBoard[i][2])
+        {
                 return GameBoard[i][0];
+        }
     }
     //Checking columns
-    for(i = 0; i < 3; i++){
+    for(i = 0; i < 3; i++)
+    {
         if(GameBoard[0][i] == GameBoard[1][i] && GameBoard[0][i] == GameBoard[2][i])
+        {
                 return GameBoard[0][i];
+        }
     }
     //Checking Diagonals
     if(GameBoard[0][0] == GameBoard[1][1] && GameBoard[0][0] == GameBoard[2][2])
+    {
         return GameBoard[0][0];
+    }
     if(GameBoard[0][2] == GameBoard[1][1] && GameBoard[0][2] == GameBoard[2][0])
+    {
         return GameBoard[0][0];
+    }
+
 
 
     return ' ';
@@ -117,11 +139,17 @@ void PrintWinner(char winner){
 
     printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     if(winner == PLAYER)
+    {
         printf("\nPlayer has won!!!\n");
+    }
     else if(winner == NPC)
+    {
         printf("\nNPC has won!!!\n");
+    }
     else
+    {
         printf("\nIt's a TIE!!!\n");
+    }
 
     printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 }
@@ -146,7 +174,7 @@ int main()
     char winner =  ' ';
 
     do{
-        printf("\n\n\n\n\n\n");
+        printf("\n\n\n");
         //Currently it'll be empty space, but then it will be replaced either with 'X' or 'Y'
         winner =  ' ';
 
@@ -229,11 +257,3 @@ CHECK: If winner is already know using CheckWinner()
           WHILE: (winner == ‘ ‘ and Number of free spaces is more than 0)
            PRINT: board for the final time to see winner visually
            CALL: PrintWinner with argument winner
-
-			
-
-
-
-
-
-
