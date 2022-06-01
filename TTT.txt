@@ -100,7 +100,7 @@ char CheckWinner(){
     //Checking columns
     for(i = 0; i < 3; i++){
         if(GameBoard[0][i] == GameBoard[1][i] && GameBoard[0][i] == GameBoard[2][i])
-                return GameBoard[i][0];
+                return GameBoard[0][i];
     }
     //Checking Diagonals
     if(GameBoard[0][0] == GameBoard[1][1] && GameBoard[0][0] == GameBoard[2][2])
