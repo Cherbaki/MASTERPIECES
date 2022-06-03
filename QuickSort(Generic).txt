@@ -1,0 +1,24 @@
+template <typename T>
+void QuickSort(T* arr,int start,int end) {
+	
+	if (start >= end)
+		return;
+
+	T pivot = arr[end];	
+	int counter = start;
+
+	for (int i = start; i < end; i++) {
+		if (pivot > arr[i]) {
+			std::swap(arr[i], arr[counter]);
+			counter++;
+		}
+	}
+
+	std::swap(arr[counter], arr[end]);
+
+	//Call sort for left side
+	QuickSort(arr, start, counter - 1);
+	//Call sort for right size
+	QuickSort(arr, counter + 1, end);
+
+}
