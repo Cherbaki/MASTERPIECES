@@ -1,0 +1,150 @@
+#include <iostream>
+#include <initializer_list>
+
+template <typename T>
+class MaxHeap {
+	
+	class Node {
+	public:
+		T data;
+		Node* left = NULL, * right = NULL;
+	};
+	Node* container = NULL;
+	int size = 0;
+	int capacity = 5;
+
+public:
+
+	//Default Constructor
+	MaxHeap(){
+		this->container = new Node[capacity];
+	}
+
+	//List initialiser constructor
+	MaxHeap(std::initializer_list<T> list) {
+		this->container = new Node[capacity];
+		for (T item : list)
+			Add(item);
+	}
+
+	//Gets the first/Root element of the heap
+	Node peek() {
+		if (size == 0)
+			std::cout << "Heap is empty!!!No root exist" << std::endl;
+		else
+			return this->container[0];
+	}
+
+	//Extracts and removes max element from the heap
+	Node pool() {
+		if (size == 0)
+			std::cout << "Heap is emty!!!Nothing to remove" << std::endl;
+		else {
+			Node item = container[0];
+			container[0] = container[size - 1];
+			size--;
+			HeapifyDown();
+			return item;
+		}
+	}
+	
+	//Inserts node in the heap
+	void Add(T data) {
+		
+		//Checking if container is full and requesting extra memory
+		DoubleCapacity();
+		this->container[size].data = data;
+		size++;
+		HeapifyUp();
+	}
+
+	//Displays items of the heap
+	void Display() {
+		for (int i = 0; i < size; i++)
+			std::cout << container[i].data << "\t";
+		std::cout << std::endl;
+	}
+
+private:
+	//Helper methods
+	
+	//Helpers for indexes
+	int GetParentsIndex(int index) {
+		return (index - 2) / 2;
+	}
+	int GetLeftChildsIndex(int index) {
+		return (index * 2) + 1;
+	}
+	int GetRightChildsIndex(int index) {
+		return (index * 2) + 2;
+	}
+
+	//Helpers for boolens
+	bool HasParentent(int index) {
+		return GetParentsIndex(index) >= 0;
+	}
+	bool HasLeftChild(int index) {
+		return GetLeftChildsIndex(index) < size;
+	}
+	bool HasRightchild(int index) {
+		return GetRightChildsIndex(index) < size;
+	}
+
+	//Getters for the actual elements
+	Node GetParent(int index) {
+		return this->container[GetParentsIndex(index)]; 
+	}
+	Node GetLeftChild(int index) {
+		return this->container[GetLeftChildsIndex(index)];
+	}
+	Node GetRightChild(int index) {
+		return this->container[GetRightChildsIndex(index)];
+	}
+
+
+	//Checks if array is full and if so doubles the size
+	void DoubleCapacity() {
+		if (size == capacity) {
+			Node* Previouse = this->container;
+			capacity *= 2;
+			this->container = new Node[capacity];
+			for (int i = 0; i < size;i++)
+				this->container[i] = Previouse[i];
+			delete Previouse;
+		}
+	}
+
+
+	//Swappers 
+	void HeapifyUp() {
+		int index = size - 1;
+		while (HasParentent(index) && GetParent(index).data < container[index].data) {
+
+			std::swap(container[GetParentsIndex(index)], container[index]);
+			index = GetParentsIndex(index);
+
+		}
+	}
+	void HeapifyDown() {
+
+		int index = 0;
+		//Iterating until node has the left child
+		while (HasLeftChild(index)) {
+
+			//Identifing largest from left and right
+			int LargestChildsIndex = GetLeftChildsIndex(index);
+			if (HasRightchild(index) && GetRightChild(index).data > GetLeftChild(index).data)
+				LargestChildsIndex = GetRightChildsIndex(index);
+
+
+			if (container[index].data > container[LargestChildsIndex].data)
+				break;
+			else
+				std::swap(container[index], container[LargestChildsIndex]);
+			
+			index = LargestChildsIndex;
+		}
+
+	}
+
+};
