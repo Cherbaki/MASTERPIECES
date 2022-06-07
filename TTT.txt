@@ -5,8 +5,8 @@
 char GameBoard[3][3];
 
 //Crating characters for player and NPC
-const char PLAYER = 'X';
-const char NPC = 'O';
+char PLAYER;
+char NPC;
 
 //Restarts board of the game which happens to be 2d Character array
 void RestartGameBoard(){
@@ -160,11 +160,34 @@ int PlayersResponse(){
      printf("\n\nDo you want to player again(Pass 1 for yes and anything else for no): ");
 
      scanf(" %c",&PlayersWhish);
-     printf("Players which: %c\n",PlayersWhish);
+
     if(PlayersWhish == '1')
         return 1;
     return 0;
 }
+
+//Asks player to choose character
+void ChooseCharaceter(){
+    char chose;
+
+    printf("Pass 1 if you want to be 'X' and anything else for  'O' :\n");
+
+    scanf(" %c",&chose);
+
+    if(chose == '1')
+    {
+        PLAYER = 'X';
+        NPC = 'O';
+    }else
+    {
+        NPC = 'X';
+        PLAYER = 'O';
+    }
+
+    printf("\n\nCharacter %c has chosen for the player\n\n",chose);
+}
+
+
 
 int main()
 {
@@ -174,6 +197,10 @@ int main()
     char winner =  ' ';
 
     do{
+        //Asking player to choose character
+        system("cls");
+        ChooseCharaceter();
+
         printf("\n\n\n");
         //Currently it'll be empty space, but then it will be replaced either with 'X' or 'Y'
         winner =  ' ';
@@ -185,6 +212,7 @@ int main()
         do{
 
             //After reseting we can print game boards
+            system("cls");
             PrintGameBoard();
 
             //Asking player to make move
@@ -205,6 +233,7 @@ int main()
         }while(winner == ' ' && FreeSpaceChecker() > 0);
 
         //Printing final game board to make winner visible graphically
+        system("cls");
         PrintGameBoard();
         //Printing the winner
         PrintWinner(winner);
@@ -215,6 +244,7 @@ int main()
 
     return 0;
 }
+
 
 
 
