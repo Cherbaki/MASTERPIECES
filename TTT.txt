@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <time.h>
+#include <stdint.h>
+
+
 
 //Creating 2 dimensional character array for 3X3 board
 char GameBoard[3][3];
@@ -7,6 +10,23 @@ char GameBoard[3][3];
 //Crating characters for player and NPC
 char PLAYER;
 char NPC;
+
+//LFSR random number generator
+unsigned long lfsr32 ( unsigned long seed ){
+    //If seed is 0 return 32bit value in sequence
+    if(seed == 0){
+        return seed>>1;
+    }
+    int i;
+    for(i = 0; i < 32;i++){
+        //Generating output bit with given taps 32,30 26 and 25
+        uint32_t out = (seed>>0 ^ seed>>2 ^ seed>>6 ^ seed>>7) & 1;
+        //shifting state 1 unite right and putting generated bit as the left last bit
+        seed = seed>>1 | out<<31;
+    }
+    return seed;
+}
+
 
 //Restarts board of the game which happens to be 2d Character array
 void RestartGameBoard(){
@@ -84,15 +104,20 @@ void PlayersTurn(){
 void NpcsTurn(){
 
     //trying to generate NPCs move using random number
-    srand(time(0));
     int r,c;
+
+    static unsigned long seed1 = 0x5AA5FF00;
+    static unsigned long seed2 = 0x5AA5F600;
 
     if(FreeSpaceChecker() < 9){
         do{
-            r = rand() % 3;
-            c = rand() % 3;
 
-            //Looping until generating perfect coordinate
+            seed1 = lfsr32(seed1);
+            seed2 = lfsr32(seed2);
+            r = seed1 % 3;
+            c = seed2 % 3;
+
+        //Looping until generating perfect coordinate
         }while(GameBoard[r][c] != ' ');
     }
 
@@ -187,19 +212,25 @@ void ChooseCharaceter(){
     printf("\n\nCharacter %c has chosen for the player\n\n",chose);
 }
 
+void EasyMode(){
 
+    FILE* GameRecordsFile = fopen("GameRecords.txt","w");
 
-int main()
-{
+    if(GameRecordsFile == NULL){
+        printf("Unable to open the file\n");
+        return;
+    }
+
     int Response = -1;
 
+    //Asking user to choose character ( either 'X' or 'O')
+    ChooseCharaceter();
 
     char winner =  ' ';
-
+    int MatchCounter = 1;
     do{
         //Asking player to choose character
         system("cls");
-        ChooseCharaceter();
 
         printf("\n\n\n");
         //Currently it'll be empty space, but then it will be replaced either with 'X' or 'Y'
@@ -238,52 +269,60 @@ int main()
         //Printing the winner
         PrintWinner(winner);
 
+        //Printing winner in file
+        fprintf(GameRecordsFile,"Winner of the %d_th match: %c\n",MatchCounter,winner);
+
         Response = PlayersResponse();
+
+        MatchCounter++;
 
     }while(Response == 1);
 
-    return 0;
+
+
+    fclose(GameRecordsFile);
+
+    GameRecordsFile = fopen("GameRecords.txt","r");
+    printf("\n\nGame records: \n\n_______________\n");
+    char text[100];
+    while(fgets(text,100,GameRecordsFile)){
+        printf("%s",text);
+    }
+
+
+    fclose(GameRecordsFile);
+
+    system("pause > 0");
+
 }
 
 
 
 
+void MainMenu(){
 
+    int choice;
+    do{
+      system("cls");
+      printf("Choose difficulty of game: \n");
+      printf("1.Easy\n");
+      printf("2.Hard\n");
+      printf("3.Quit Game\n");
+      scanf(" %d",&choice);
+      if(choice == 1){
+        system("cls");
+        EasyMode();
+      }else if(choice == 2){
+        //HardMode();
+      }
 
-____________________________________________________________________________________________________________
-					PseudoCode
-CREATE: 2 dimensional global character array for gameboard, name: GameBoard
-CREATE: 2 global character array for Players and Npcs characters(‘X’ or ‘0’)
-CREATE  Function: RestartGameBoard
-	Using nasted for loops set all entry of the GameBoard to space character	
-CREATE  Function: PeintGameBoard
-	Prints Game board in console with additional aspects .
-CREATE Function: FreeSpaceChecker, Return type integer
-	Using nasted for loops counts number of free spaces in the GameBoard and returns amount
-CREATE Function: PlayersTurn
-	Asks User to pass coordinates(row and column number)for move and then, if entry in the given coordinates is not taken puts players characte, else warns user about already taken entry and repets the process.
-CREATE Function: NpcsTurn 
-	IF: there is at least 1 free space
-GENERATE:  random number for 0 to 1 for row and column corrdnate until entry in the given coordinates is not empty space.
-	PRINT: Npcs character on the generated entry.
-CREATE Function:Check Winner
-FOR: Check if any row is already full with same Characters and if so return this character as winner.
-FOR: Check if any colomn is already full with same Characters and if so return this character as winner.
-IF: Check 2 diagonals for wining condition and return winner character.
-	IF: non of the above condition is satisfied, then just return empty space.
-CREATE Function: Print Winner takes one character parameter for winner
-	IF:winner is plater Print: “Player has won”
-	ELSE IF: Npc has won Print: “Npc has won”
-	ELSE if there is no winner Print: “It’s a TIE”
+    }while(choice != 3);
+}
 
-CREATE FUNCTION: main
-CREATE Variable:”Response” latter will be used to determine if player want to continue playing after end of the game.
-	DO:
-		CALL:PrintGameBoard();
-		CALL: PlayersTurn();
-CHECK: If winner is already know using CheckWinner() function and if so break the    loop
-		CALL:Npcs turn();	
-CHECK: If winner is already know using CheckWinner()
-          WHILE: (winner == ‘ ‘ and Number of free spaces is more than 0)
-           PRINT: board for the final time to see winner visually
-           CALL: PrintWinner with argument winner
+int main()
+{
+
+    MainMenu();
+
+    return 0;
+}
