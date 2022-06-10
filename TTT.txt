@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
+#include <string.h>
 
 
 
@@ -8,7 +9,7 @@
 char GameBoard[3][3];
 
 //Crating characters for player and NPC
-char PLAYER;
+char PLAYER,PLAYER2;
 char NPC;
 
 //LFSR random number generator
@@ -26,7 +27,6 @@ unsigned long lfsr32 ( unsigned long seed ){
     }
     return seed;
 }
-
 
 //Restarts board of the game which happens to be 2d Character array
 void RestartGameBoard(){
@@ -100,8 +100,38 @@ void PlayersTurn(){
 
 }
 
+//Allows two player two play against each other
+void TwoPlayerMove(char Char){
+
+        int r,c;
+        if(Char == PLAYER)
+            printf("It's Player1s move:\n");
+        else
+            printf("It's Player2s move:\n");
+
+        printf("Pass row number(From 1 to 3): ");
+        scanf("%d",&r);
+        //Decrementing given rows index to match it 0 based array
+        r--;
+
+        printf("Pass column number(Form 1 to 3): ");
+        scanf("%d",&c);
+        //Decrementing given columns index to math it 0 based array
+        c--;
+
+        //checking if given coordinates is already occupied
+        if(GameBoard[r][c] !=  ' '){
+            printf("Given place is already occupied, try another EMPTY one\n");
+            PlayersTurn();
+            return;
+        }
+
+        //If given coordinates aren't occupied
+        GameBoard[r][c] = Char;
+}
+
 //This function will be executed when it'll be NPCs turn to move
-void NpcsTurn(){
+void NpcsTurnEasy(){
 
     //trying to generate NPCs move using random number
     int r,c;
@@ -123,6 +153,203 @@ void NpcsTurn(){
 
     GameBoard[r][c] = NPC;
 
+}
+
+//This function will be executed when it'll be NPCs turn to move
+void NpcsTurnPro(){
+
+    //Checking all rows
+    int r,c;
+    for(r = 0; r < 3; r++){
+        int NumberOfPlayersCharacters = 0;
+        int NumberOfNpcsCharacters = 0;
+        int NumberOfEmptySpaces = 0;
+        //Reading each row
+        for(c = 0; c < 3; c++){
+            //Counting number of player characters in row
+            if(GameBoard[r][c] == PLAYER)
+                NumberOfPlayersCharacters++;
+            //Counting number of NPC characters in row
+            else if(GameBoard[r][c] == NPC)
+                NumberOfNpcsCharacters++;
+            else
+                NumberOfEmptySpaces++;
+        }
+
+        //Firstly checking if NPC should win
+        if(NumberOfNpcsCharacters == 2 && NumberOfEmptySpaces == 1){
+            int i;
+            //finding empty spaces index
+            for(i = 0; i < 3;i++){
+                if(GameBoard[r][i] == ' ')
+                   break;
+            }
+            GameBoard[r][i] = NPC;
+            return;
+        }
+        //Checking if NPC should block
+        if(NumberOfPlayersCharacters == 2 && NumberOfEmptySpaces == 1){
+            int i;
+            //finding empty spaces index
+            for(i = 0; i < 3;i++){
+                if(GameBoard[r][i] == ' ')
+                   break;
+            }
+            GameBoard[r][i] = NPC;
+            return;
+        }
+
+
+    }
+
+    //Checking all rows columns
+    for(c = 0; c < 3; c++){
+        int NumberOfPlayersCharacters = 0;
+        int NumberOfNpcsCharacters = 0;
+        int NumberOfEmptySpaces = 0;
+        //Reading each row
+        for(r = 0; r < 3; r++){
+            //Counting number of player characters in row
+            if(GameBoard[r][c] == PLAYER)
+                NumberOfPlayersCharacters++;
+            //Counting number of NPC characters in row
+            else if(GameBoard[r][c] == NPC)
+                NumberOfNpcsCharacters++;
+            else
+                NumberOfEmptySpaces++;
+        }
+
+        //Firstly checking if NPC should win
+        if(NumberOfNpcsCharacters == 2 && NumberOfEmptySpaces == 1){
+            int i;
+            //finding empty spaces index
+            for(i = 0; i < 3;i++){
+                if(GameBoard[i][c] == ' ')
+                   break;
+            }
+            GameBoard[i][c] = NPC;
+            return;
+        }
+        //Checking if NPC should block
+        if(NumberOfPlayersCharacters == 2 && NumberOfEmptySpaces == 1){
+            int i;
+            //finding empty spaces index
+            for(i = 0; i < 3;i++){
+                if(GameBoard[i][c] == ' ')
+                   break;
+            }
+            GameBoard[i][c] = NPC;
+            return;
+        }
+
+
+    }
+
+    //Checking left right diagonal
+
+        int NumberOfPlayersCharacters = 0;
+        int NumberOfNpcsCharacters = 0;
+        int NumberOfEmptySpaces = 0;
+
+        //Counting each diagonal
+        c = 0;
+        for(r = 0;r < 3;r++){
+
+            //Counting number of player characters in row
+            if(GameBoard[r][c] == PLAYER)
+                NumberOfPlayersCharacters++;
+            //Counting number of NPC characters in row
+            else if(GameBoard[r][c] == NPC)
+                NumberOfNpcsCharacters++;
+            else
+                NumberOfEmptySpaces++;
+            c++;
+        }
+
+        //Firstly checking if NPC should win
+        if(NumberOfNpcsCharacters == 2 && NumberOfEmptySpaces == 1){
+            int k,l = 0;
+            //finding empty spaces index
+            for(k = 0; k < 3;k++){
+                l++;
+                if(GameBoard[k][l] == ' ')
+                   break;
+            }
+            GameBoard[k][l] = NPC;
+            return;
+        }
+
+        //Checking if NPC should block
+        if(NumberOfPlayersCharacters == 2 && NumberOfEmptySpaces == 1){
+            int k,l = 0;
+            //finding empty spaces index
+            for(k = 0; k < 3;k++){
+                if(GameBoard[k][l] == ' ')
+                   break;
+                l++;
+            }
+            GameBoard[k][l] = NPC;
+            return;
+        }
+
+
+
+
+    //Checking right left diagonal
+
+        NumberOfPlayersCharacters = 0;
+        NumberOfNpcsCharacters = 0;
+        NumberOfEmptySpaces = 0;
+
+        //Counting each diagonal
+        c = 2;
+        for(r = 2;r > 0;r--){
+
+            //Counting number of player characters in row
+            if(GameBoard[r][c] == PLAYER)
+                NumberOfPlayersCharacters++;
+            //Counting number of NPC characters in row
+            else if(GameBoard[r][c] == NPC)
+                NumberOfNpcsCharacters++;
+            else
+                NumberOfEmptySpaces++;
+
+            c--;
+        }
+
+        //Firstly checking if NPC should win
+        if(NumberOfNpcsCharacters == 2 && NumberOfEmptySpaces == 1){
+            int k,l = 2;
+            //finding empty spaces index
+            for(k = 2; k > 0;k--){
+
+                if(GameBoard[k][l] == ' ')
+                   break;
+
+                l--;
+            }
+            GameBoard[k][l] = NPC;
+            return;
+        }
+
+        //Checking if NPC should block
+        if(NumberOfPlayersCharacters == 2 && NumberOfEmptySpaces == 1){
+            int k,l = 2;
+            //finding empty spaces index
+            for(k = 2; k > 0;k--){
+
+                if(GameBoard[k][l] == ' ')
+                   break;
+
+                l--;
+            }
+            GameBoard[k][l] = NPC;
+            return;
+        }
+
+
+
+    NpcsTurnEasy();
 }
 
 //Checks who is the winner
@@ -179,6 +406,20 @@ void PrintWinner(char winner){
     printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 }
 
+//prints the winner
+void PrintWinnerForTwoPlayer(char winner){
+
+    printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    if(winner == PLAYER){
+        printf("\nPlayer1 has won!!!\n");
+    }
+    else {
+        printf("\nPlayer2 has won!!!\n");
+    }
+
+    printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+}
+
 //Checks if player want to play again
 int PlayersResponse(){
      char PlayersWhish;
@@ -203,9 +444,11 @@ void ChooseCharaceter(){
     {
         PLAYER = 'X';
         NPC = 'O';
+        PLAYER2 = 'O';
     }else
     {
         NPC = 'X';
+        PLAYER2 = 'X';
         PLAYER = 'O';
     }
 
@@ -254,7 +497,7 @@ void EasyMode(){
                 break;
 
             //Asking NPC to make move
-            NpcsTurn();
+            NpcsTurnEasy();
             //Now let's check if winner is already known
             winner = CheckWinner();
             if(winner != ' ' || FreeSpaceChecker() == 0)
@@ -270,9 +513,12 @@ void EasyMode(){
         PrintWinner(winner);
 
         //Printing winner in file
-        fprintf(GameRecordsFile,"Winner of the %d_th match: %c\n",MatchCounter,winner);
-
+        if(winner != ' ')
+            fprintf(GameRecordsFile,"Winner of the %d_th match: %c\n",MatchCounter,winner);
+        else
+            fprintf(GameRecordsFile,"Game #%d end with result 'Tie'\n",MatchCounter);
         Response = PlayersResponse();
+
 
         MatchCounter++;
 
@@ -281,9 +527,9 @@ void EasyMode(){
 
 
     fclose(GameRecordsFile);
-
+    system("cls");
     GameRecordsFile = fopen("GameRecords.txt","r");
-    printf("\n\nGame records: \n\n_______________\n");
+    printf("Game records: \n_______________\n");
     char text[100];
     while(fgets(text,100,GameRecordsFile)){
         printf("%s",text);
@@ -296,33 +542,220 @@ void EasyMode(){
 
 }
 
+void HardMode(){
+
+    FILE* GameRecordsFile = fopen("GameRecords.txt","w");
+
+    if(GameRecordsFile == NULL){
+        printf("Unable to open the file\n");
+        return;
+    }
+
+    int Response = -1;
+
+    //Asking user to choose character ( either 'X' or 'O')
+    ChooseCharaceter();
+
+    char winner =  ' ';
+    int MatchCounter = 1;
+    do{
+        //Asking player to choose character
+        system("cls");
+
+        printf("\n\n\n");
+        //Currently it'll be empty space, but then it will be replaced either with 'X' or 'Y'
+        winner =  ' ';
+
+        //At first we'll restart the board
+        RestartGameBoard();
+
+
+        do{
+
+            //After reseting we can print game boards
+            system("cls");
+            PrintGameBoard();
+
+            //Asking player to make move
+            PlayersTurn();
+            //Now let's check if winner is already known
+            winner = CheckWinner();
+            if(winner != ' ' || FreeSpaceChecker() == 0)
+                break;
+
+            //Asking NPC to make move
+            NpcsTurnPro();
+            //Now let's check if winner is already known
+            winner = CheckWinner();
+            if(winner != ' ' || FreeSpaceChecker() == 0)
+                break;
+
+
+        }while(winner == ' ' && FreeSpaceChecker() > 0);
+
+        //Printing final game board to make winner visible graphically
+        system("cls");
+        PrintGameBoard();
+        //Printing the winner
+        PrintWinner(winner);
+
+        //Printing winner in file
+        if(winner != ' ')
+            fprintf(GameRecordsFile,"Winner of the %d_th match: %c\n",MatchCounter,winner);
+        else
+            fprintf(GameRecordsFile,"Game #%d end with result 'Tie'\n",MatchCounter);
+
+        Response = PlayersResponse();
+
+        MatchCounter++;
+
+    }while(Response == 1);
 
 
 
+    fclose(GameRecordsFile);
+    system("cls");
+    GameRecordsFile = fopen("GameRecords.txt","r");
+    printf("Game records: \n_______________\n");
+    char text[100];
+    while(fgets(text,100,GameRecordsFile)){
+        printf("%s",text);
+    }
+
+
+    fclose(GameRecordsFile);
+
+    system("pause > 0");
+}
+
+void TwoPlayer(){
+
+    FILE* GameRecordsFile = fopen("GameRecords.txt","w");
+
+    if(GameRecordsFile == NULL){
+        printf("Unable to open the file\n");
+        return;
+    }
+
+    int Response = -1;
+
+    //Asking user to choose character ( either 'X' or 'O')
+    ChooseCharaceter();
+
+    char winner =  ' ';
+    int MatchCounter = 1;
+    do{
+        //Asking player to choose character
+        system("cls");
+
+        printf("\n\n\n");
+        //Currently it'll be empty space, but then it will be replaced either with 'X' or 'Y'
+        winner =  ' ';
+
+        //At first we'll restart the board
+        RestartGameBoard();
+
+
+        do{
+
+            //After reseting we can print game boards
+            system("cls");
+            PrintGameBoard();
+
+            //Asking player1 to make move
+            TwoPlayerMove(PLAYER);
+            //Now let's check if winner is already known
+            winner = CheckWinner();
+            if(winner != ' ' || FreeSpaceChecker() == 0)
+                break;
+
+            //Cleaning screen after first players move
+            system("cls");
+            PrintGameBoard();
+            //Asking player2 to make move
+            TwoPlayerMove(PLAYER2);
+            //Now let's check if winner is already known
+            winner = CheckWinner();
+            if(winner != ' ' || FreeSpaceChecker() == 0)
+                break;
+
+
+        }while(winner == ' ' && FreeSpaceChecker() > 0);
+
+        //Printing final game board to make winner visible graphically
+        system("cls");
+        PrintGameBoard();
+        //Printing the winner
+        PrintWinnerForTwoPlayer(winner);
+
+
+        //Printing winner in file
+        if(winner != ' ')
+            fprintf(GameRecordsFile,"Winner of the %d_th match: %c\n",MatchCounter,winner);
+        else
+            fprintf(GameRecordsFile,"Game #%d end with result 'Tie'\n",MatchCounter);
+        Response = PlayersResponse();
+
+
+        MatchCounter++;
+
+    }while(Response == 1);
+
+
+
+    fclose(GameRecordsFile);
+    system("cls");
+    GameRecordsFile = fopen("GameRecords.txt","r");
+    printf("Game records: \n_______________\n");
+    char text[100];
+    while(fgets(text,100,GameRecordsFile)){
+        printf("%s",text);
+    }
+
+
+    fclose(GameRecordsFile);
+
+    system("pause > 0");
+
+}
+
+//Menu which allows player to choose between multiple difficulties
 void MainMenu(){
 
     int choice;
     do{
       system("cls");
-      printf("Choose difficulty of game: \n");
-      printf("1.Easy\n");
-      printf("2.Hard\n");
-      printf("3.Quit Game\n");
+      printf("-----------------------------\n");
+      printf("|Choose difficulty of game: |\n");
+      printf("-----------------------------\n");
+      printf("|1.Easy                     |\n");
+      printf("-----------------------------\n");
+      printf("|2.Hard                     |\n");
+      printf("-----------------------------\n");
+      printf("|3.Two Player               |\n");
+      printf("-----------------------------\n");
+      printf("|4.Quit Game                |\n");
+      printf("-----------------------------\n");
       scanf(" %d",&choice);
       if(choice == 1){
         system("cls");
         EasyMode();
       }else if(choice == 2){
-        //HardMode();
+        system("cls");
+        HardMode();
+      }else if(choice == 3){
+        system("cls");
+        TwoPlayer();
       }
 
-    }while(choice != 3);
+    }while(choice != 4);
 }
 
 int main()
 {
-
     MainMenu();
+
+
 
     return 0;
 }
