@@ -1,0 +1,168 @@
+#include "BST.h"
+
+//List initialiser construcot
+BST::BST(std::initializer_list<T> list) {
+	for (T item : list)
+		Add(item);
+}
+//Copty constructor
+BST::BST(const BST& B2) {
+	HelpInCopy(B2.root);
+}
+//Copy Constructor Helper
+void BST::HelpInCopy(Node* Root) {
+	//Iterating inorder to add copy item 
+	if (Root != NULL) {
+		HelpInCopy(Root->left);
+		Add(Root->data);
+		HelpInCopy(Root->right);
+	}
+}
+//Destructor
+BST::~BST() {
+	HelpInDelete(root);
+}
+//Destructor Helper
+void BST::HelpInDelete(Node*& Root) {
+	if (Root != NULL) {
+		HelpInDelete(Root->left);
+		HelpInDelete(Root->right);
+		delete Root;
+		Root = NULL;
+	}
+}
+
+
+
+//Displays the elements of BST
+void BST::DisplayIn() {
+	DisplayIn(root);
+	std::cout << std::endl;
+}
+void BST::DisplayPre() {
+	DisplayPre(root);
+	std::cout << std::endl;
+}
+void BST::DisplayPost() {
+	DisplayPost(root);
+	std::cout << std::endl;
+}
+//Inoder traversial helper
+void BST::DisplayIn(Node* Root) {
+	if (Root != NULL) {
+		DisplayIn(Root->left);
+		std::cout << Root->data << "\t";
+		DisplayIn(Root->right);
+	}
+}
+//Postorder traversial helper
+void BST::DisplayPost(Node* Root) {
+	if (Root != NULL) {
+		DisplayPost(Root->left);
+		DisplayPost(Root->right);
+		std::cout << Root->data << "\t";
+	}
+}
+//Preorder traversial helper
+void BST::DisplayPre(Node* Root) {
+	if (Root != NULL) {
+		std::cout << Root->data << "\t";
+		DisplayPre(Root->left);
+		DisplayPre(Root->right);
+	}
+}
+
+
+
+//Inserts item in BST
+void BST::Add(T data) {
+	Add(root, data);
+}
+//Insertion helper
+void BST::Add(Node*& Root, T data) {
+	if (Root == NULL) {
+
+	//At this point we have found the place to insert the node
+	Root = new Node(data);
+	}
+	else if (Root->data == data) {
+		std::cout << "Value is already in BST" << std::endl;
+	}
+	else if (Root->data < data) {
+		Add(Root->right, data);
+	}
+	else if (Root->data > data) {
+		Add(Root->left, data);
+	}
+	
+
+}
+
+
+
+//Deletes item from BST
+void BST::Delete(T data) {
+	Delete(root, data);
+}
+//Deletiong helper
+void BST::Delete(Node*& Root, T data) {
+	if (Root == NULL)
+		std::cout << "there is no such value in BST to delete" << std::endl;
+	else if (Root->data > data)
+		Delete(Root->left, data);
+	else if (Root->data < data)
+		Delete(Root->right, data);
+	else {
+		//At this point we have found the node that should be deleted
+		if (Root->left == NULL) {
+			Node* temp = Root;
+			Root = Root->right;
+			delete temp;
+		}
+		else if (Root->right == NULL) {
+			Node* temp = Root;
+			Root = Root->left;
+			delete temp;
+		}
+		else if (Root->left != NULL && Root->right && NULL) {
+			
+			//Lets find max form left subtree
+			Node* MaxFromLeftSubTree = Root->left;
+			while (MaxFromLeftSubTree->right != NULL)
+				MaxFromLeftSubTree = MaxFromLeftSubTree->right;
+			//Exchange values and delete
+			Root->data = MaxFromLeftSubTree->data;
+			delete MaxFromLeftSubTree;
+			MaxFromLeftSubTree = NULL;
+		}
+	}
+}
+
+
+
+//Searchs item in BST and retuns boolean
+bool BST::Search(T data) {
+	return Search(root, data);
+}
+//Seach helper
+bool BST::Search(Node* Root, T data) {
+	if (Root == NULL)
+		return false;
+	if (Root->data > data)
+		Search(Root->left, data);
+	else if(Root->data < data)
+		Search(Root->right, data);
+	else if(Root->data = data)
+		return true;
+}
+
+
+
+//Overloading assignment operator
+BST& BST::operator =(const BST& B2) {
+	//First of all clearing up this tree
+	HelpInDelete(root);
+	HelpInCopy(B2.root);
+	return *this;
+}
+
