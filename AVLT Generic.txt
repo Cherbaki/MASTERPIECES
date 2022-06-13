@@ -1,0 +1,196 @@
+template <typename T>
+class AVLT {
+	
+	class Node {
+	public:
+		T Data;
+		Node* Left = NULL,*Right = NULL;
+		int Height;
+		Node(T data, Node* left = NULL,Node* right = NULL,int height = 1):
+			Data(data),Left(left),Right(right),Height(height) {}
+	};
+	Node* root = NULL;
+public:
+	
+	//Default constructor
+	AVLT() = default;
+
+	//Initialiser list constructor
+	AVLT(std::initializer_list<T> list) {
+		for (auto item : list)
+			Insert(item);
+	}
+
+	//Recursively inserting items in the AVLT
+	void Insert(T data) {
+		InsertionHelper(root, data);
+	}
+
+	//Inorder Display
+	void Display() {
+		DisplayHelper(this->root);
+		std::cout << std::endl;
+	}
+
+	//Deletes given item from AVLT if it's there
+	void Delete(T data) {
+		DeleteionHelper(root, data);
+	}
+
+private:
+	//Returns the height of the node
+	int GetHeight(Node* Root) {
+		if (Root == NULL)
+			return 0;
+		return Root->Height;
+	}
+	
+	//Returns blance factor for given node
+	int GetBalanceFactor(Node* Root) {
+		return GetHeight(Root->Left) - GetHeight(Root->Right);
+	}
+
+	//Right rotation
+	void RightRotate(Node*& Root) {
+		Node* RootsLeft = Root->Left;
+		Node* LeftsRight = RootsLeft->Right;
+		RootsLeft->Right = Root;
+		Root->Left = LeftsRight;
+		//Updating height
+		Root->Height = std::max(GetHeight(Root->Left), GetHeight(Root->Right)) + 1;
+		RootsLeft->Height = std::max(GetHeight(RootsLeft->Left), GetHeight(RootsLeft->Right)) + 1;
+		Root = RootsLeft;
+	}
+	//Left Rotate
+	void LeftRotate(Node*& Root) {
+		Node* RootsRight = Root->Right;
+		Node* RightsLeft = RootsRight->Left;
+		RootsRight->Left = Root;
+		Root->Right = RightsLeft;
+		//Updating height
+		Root->Height = std::max(GetHeight(Root->Left), GetHeight(Root->Right)) + 1;
+		RootsRight->Height = std::max(GetHeight(RootsRight->Left), GetHeight(RootsRight->Right)) + 1;
+		Root = RootsRight;
+	}
+
+	//Inorder display helper
+	void DisplayHelper(Node* Root) {
+		if (Root == NULL || Root->Data == -572662307)
+			return;
+		DisplayHelper(Root->Left);
+		std::cout << Root->Data << "\t";
+		DisplayHelper(Root->Right);
+	}
+
+	//Insertiong helper
+	void InsertionHelper(Node*& Root, T data) {
+
+		if (Root == NULL)
+			Root = new Node(data);
+		else if (data > Root->Data)
+			InsertionHelper(Root->Right, data);
+		else if (data < Root->Data)
+			InsertionHelper(Root->Left, data);
+		else {
+			std::cout << "Item is already in AVLT" << std::endl;
+			return;
+		}
+
+		//Updating height before balancig the tree
+		Root->Height = std::max(GetHeight(Root->Left), GetHeight(Root->Right)) + 1;
+		//Starting balancing the tree if needed
+		int BalanceFactor = GetBalanceFactor(Root);
+
+
+		if (BalanceFactor > 1 && data < Root->Left->Data)//If tree is LeftLeft inbalance
+			RightRotate(Root);
+		else if (BalanceFactor < -1 && data > Root->Right->Data)//if tree is RightRight inbalance
+			LeftRotate(Root);
+		else if (BalanceFactor > 1 && data > Root->Left->Data) {//If tree is LeftRight inbalance
+			LeftRotate(Root->Left);
+			RightRotate(Root);
+		}
+		else if (BalanceFactor < -1 && data < Root->Right->Data) {//If tree is RightLeft inbalance
+			RightRotate(Root->Right);
+			LeftRotate(Root);
+		}
+
+	}
+
+	//Deletiong helper
+	void DeleteionHelper(Node*& Root, T data) {
+		//Firstly we want to fine the node
+		if (Root == NULL) {
+			std::cout << "Elemnt is not in AVLT" << std::endl;
+			return;
+		}
+		else if (Root->Data > data){
+			DeleteionHelper(Root->Left, data);
+			return;
+		}
+		else if (Root->Data < data) {
+			DeleteionHelper(Root->Right, data);
+			return;
+		}
+
+		//At this point we found the node, Time to delete
+		//Case 1 and case 2 can be united likewise
+		if (Root->Left == NULL) {
+			Node* temp = Root;
+			Root = Root->Right;
+			delete temp;
+		}
+		else if (Root->Right == NULL) {
+			Node* temp = Root;
+			Root = Root->Left;
+			delete temp;
+		}
+		//Case 3
+		else if (Root->Right != NULL && Root->Left != NULL) {
+			Node* MaxFromLeftSubTreePar = FindMaxFromLeftPar(Root->Left);
+
+			if (MaxFromLeftSubTreePar == NULL) {
+				Root->Data = Root->Left->Data;
+				delete Root->Left;
+				Root->Left = NULL;
+			}
+			else{
+				Root->Data = MaxFromLeftSubTreePar->Right->Data;
+				delete MaxFromLeftSubTreePar->Right;
+				MaxFromLeftSubTreePar->Right = NULL;
+			}
+		}
+
+		if (Root == NULL)
+			return;
+		//Updating height before balancig the tree
+		Root->Height = std::max(GetHeight(Root->Left), GetHeight(Root->Right)) + 1;
+		//Starting balancing the tree if needed
+		int BalanceFactor = GetBalanceFactor(Root);
+
+		if (BalanceFactor > 1 && data < Root->Left->Data)//If tree is LeftLeft inbalance
+			RightRotate(Root);
+		else if (BalanceFactor < -1 && data > Root->Right->Data)//if tree is RightRight inbalance
+			LeftRotate(Root);
+		else if (BalanceFactor > 1 && data > Root->Left->Data) {//If tree is LeftRight inbalance
+			LeftRotate(Root->Left);
+			RightRotate(Root);
+		}
+		else if (BalanceFactor < -1 && data < Root->Right->Data) {//If tree is RightLeft inbalance
+			RightRotate(Root->Right);
+			LeftRotate(Root);
+		}
+
+	}
+
+	//Finds Maximum value from leftSubTree
+	Node* FindMaxFromLeftPar(Node* RootsLeft) {
+		Node* pare = NULL;
+		while (RootsLeft->Right != NULL){
+			pare = RootsLeft;
+			RootsLeft = RootsLeft->Right;
+		}
+		return pare;
+	}
+
+};
